@@ -1,0 +1,20 @@
+{
+  "name": "Agenda Jhoe Barbearia",
+  "short_name": "Agenda Jhoe",
+  "description": "Painel privado de agendamentos da Jhoe Barbearia",
+  "id": "/admin.html",
+  "start_url": "/admin.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090a0a",
+  "theme_color": "#090a0a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
