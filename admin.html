@@ -1041,7 +1041,7 @@
       .booking { border-radius: 13px; box-shadow: 0 10px 35px rgba(0,0,0,.14); }
       .manual-booking { background: radial-gradient(circle at 92% 10%,rgba(231,190,115,.16),transparent 32%), linear-gradient(145deg,#181714,#101111); }
       .manual-grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 12px; }
-      .manual-field { grid-column: span 4; display: grid; gap: 7px; }
+      .manual-field { grid-column: span 3; display: grid; gap: 7px; }
       .manual-field.wide { grid-column: span 6; }
       .manual-field.full { grid-column: 1 / -1; }
       .manual-field label { color: #b7b0a5; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
@@ -1209,9 +1209,11 @@
               <label for="manualDate">Data</label>
               <input class="field" id="manualDate" type="date" />
             </div>
-            <div class="manual-field full">
-              <label>Horários disponíveis</label>
-              <div class="manual-times" id="manualTimes"><p class="manual-note">Escolha profissional, serviço e data para consultar a agenda.</p></div>
+            <div class="manual-field">
+              <label for="manualTimeSelect">Horário disponível</label>
+              <select class="field" id="manualTimeSelect" disabled>
+                <option value="">Escolha profissional, serviço e data</option>
+              </select>
             </div>
           </div>
           <div class="manual-actions">
@@ -2356,7 +2358,7 @@
       const manualBarber = document.querySelector("#manualBarber");
       const manualService = document.querySelector("#manualService");
       const manualDate = document.querySelector("#manualDate");
-      const manualTimes = document.querySelector("#manualTimes");
+      const manualTimeSelect = document.querySelector("#manualTimeSelect");
       const manualSubmit = document.querySelector("#manualSubmit");
       const manualResult = document.querySelector("#manualResult");
       let manualTime = "";
@@ -2381,11 +2383,12 @@
 
       function resetManualTimes(message = "Escolha profissional, serviço e data para consultar a agenda.") {
         manualTime = "";
-        manualTimes.innerHTML = "";
-        const note = document.createElement("p");
-        note.className = "manual-note";
-        note.textContent = message;
-        manualTimes.appendChild(note);
+        manualTimeSelect.innerHTML = "";
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = message;
+        manualTimeSelect.appendChild(option);
+        manualTimeSelect.disabled = true;
         validateManualBooking();
       }
 
@@ -2474,27 +2477,19 @@
           if (!response.ok)
             throw new Error(data.error || "Não foi possível consultar a agenda.");
           const times = Array.isArray(data.available) ? data.available : [];
-          manualTimes.innerHTML = "";
+          manualTimeSelect.innerHTML = '<option value="">Escolha um horário livre</option>';
           if (!times.length) {
             resetManualTimes("Não há horários disponíveis nesta data.");
             setManualResult("");
             return;
           }
           times.forEach((time) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.textContent = time;
-            button.onclick = () => {
-              manualTimes
-                .querySelectorAll("button")
-                .forEach((item) => item.classList.remove("active"));
-              button.classList.add("active");
-              manualTime = time;
-              setManualResult(`Horário selecionado: ${time}`);
-              validateManualBooking();
-            };
-            manualTimes.appendChild(button);
+            const option = document.createElement("option");
+            option.value = time;
+            option.textContent = time;
+            manualTimeSelect.appendChild(option);
           });
+          manualTimeSelect.disabled = false;
           setManualResult("");
         } catch (error) {
           resetManualTimes(error.message);
@@ -2553,6 +2548,11 @@
       manualBarber.onchange = populateManualServices;
       manualService.onchange = loadManualTimes;
       manualDate.onchange = loadManualTimes;
+      manualTimeSelect.onchange = () => {
+        manualTime = manualTimeSelect.value;
+        setManualResult(manualTime ? `Horário selecionado: ${manualTime}` : "");
+        validateManualBooking();
+      };
       manualName.oninput = validateManualBooking;
       manualPhone.oninput = validateManualBooking;
       manualSubmit.onclick = createManualBooking;
