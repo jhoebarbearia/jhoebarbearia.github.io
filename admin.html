@@ -1735,7 +1735,9 @@
               "&to=" +
               encodeURIComponent(toDate.value),
           );
-          bookings = Array.isArray(data.bookings) ? data.bookings : [];
+          bookings = Array.isArray(data.bookings)
+            ? data.bookings.filter((booking) => booking.status !== "cancelled")
+            : [];
           renderBookings();
         } catch (e) {
           agendaEl.innerHTML = '<div class="empty">' + e.message + "</div>";
