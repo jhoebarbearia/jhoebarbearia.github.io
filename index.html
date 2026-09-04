@@ -138,6 +138,20 @@ const assistantPanel=document.querySelector("#assistantPanel"),assistantLauncher
 </script>
 <script>
 document.querySelectorAll(".jhoe-assistant, #clientGuideBtn, #clientGuideModal, #clientGuideResume").forEach(element=>element.remove());
+const automaticConfirmationText=new Map([
+ ["Escolha o serviço e envie sua solicitação em menos de um minuto. A confirmação chega pelo WhatsApp.","Escolha o serviço e agende em menos de um minuto. O horário é confirmado automaticamente."],
+ ["Preencha os dados. A equipe confirmará a disponibilidade pelo WhatsApp.","Preencha os dados. O sistema confirma o horário automaticamente."],
+ ["Resumo da solicitação","Resumo do agendamento"]
+]);
+const confirmationWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+while(confirmationWalker.nextNode()){
+ const replacement=automaticConfirmationText.get(confirmationWalker.currentNode.nodeValue.trim());
+ if(replacement)confirmationWalker.currentNode.nodeValue=replacement;
+}
+bookingWhatsApp=function(payload,data){
+ const msg=["Olá, "+(barberName||"Jhoe Barbearia")+"! Meu horário foi confirmado automaticamente pelo site.","","SERVIÇO: "+payload.service,"PROFISSIONAL: "+barberName,"VALOR: "+priceLabel(servicePrice),"DURAÇÃO: "+durationLabel(serviceDuration),"DATA: "+new Date(payload.date+"T12:00:00").toLocaleDateString("pt-BR",{dateStyle:"long"}),"HORÁRIO: "+payload.time,"CLIENTE: "+payload.name,"TELEFONE: "+payload.phone,"CÓDIGO DA RESERVA: "+(data.booking_id||""),"","O horário já está confirmado."].join("\n");
+ location.href="https://wa.me/"+String(payload.barber_phone||barberPhone||"5519992489256").replace(/\D/g,"")+"?text="+encodeURIComponent(msg);
+};
 </script>
 <style>
 .client-cancel-launcher{position:fixed;left:18px;bottom:18px;z-index:90;border:1px solid #b88a3d;background:#111;color:#edc978;border-radius:999px;padding:12px 18px;font:700 12px/1.1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 10px 30px #0008;cursor:pointer}.client-cancel-launcher:hover{background:#edc978;color:#111}.client-cancel-modal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:#000c;backdrop-filter:blur(8px)}.client-cancel-modal.hidden{display:none}.client-cancel-card{position:relative;width:min(100%,520px);border:1px solid #6f5429;border-radius:22px;background:linear-gradient(145deg,#1d1a15,#0c0c0b);padding:28px;color:#f6f0e7;box-shadow:0 24px 80px #000}.client-cancel-card h2{margin:7px 0 8px;font:600 34px/1.05 Georgia,serif}.client-cancel-card p{margin:0 0 20px;color:#bbb}.client-cancel-eyebrow{color:#e8bc63!important;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.client-cancel-close{position:absolute;right:15px;top:13px;border:0;background:transparent;color:#ddd;font-size:28px;cursor:pointer}.client-cancel-card label{display:block;margin:13px 0 6px;color:#d8c6a7;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.client-cancel-card input{box-sizing:border-box;width:100%;border:1px solid #57472d;border-radius:10px;background:#090909;color:#fff;padding:14px;font-size:16px}.client-cancel-submit{width:100%;margin-top:18px;border:0;border-radius:10px;background:#dfb45c;color:#111;padding:15px;font-weight:900;cursor:pointer}.client-cancel-submit:disabled{opacity:.55;cursor:wait}.client-cancel-status{min-height:20px;margin:14px 0 0!important;font-size:14px}.client-cancel-status.error{color:#ff9b90}.client-cancel-status.success{color:#8ee2a3}.client-cancel-note{margin-top:12px!important;font-size:12px;color:#999!important}@media(max-width:640px){.client-cancel-launcher{left:12px;bottom:12px;max-width:190px;padding:11px 14px;font-size:10px}.client-cancel-card{padding:24px 20px}.client-cancel-card h2{font-size:29px}}
