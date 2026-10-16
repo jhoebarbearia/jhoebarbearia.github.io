@@ -1164,6 +1164,16 @@
           ><button class="button" id="refreshBtn">Atualizar agenda</button
           ><button class="button secondary logout" id="logoutBtn">Sair</button>
           </div>
+          <section aria-labelledby="absenceTitle" style="margin:0 0 22px;padding:18px;background:#151616;border:1px solid #5a4930;border-radius:10px">
+            <h2 id="absenceTitle" style="margin:0 0 7px;color:#e7be73;font-family:Georgia,serif;font-weight:400">Avisar que não vou abrir</h2>
+            <p style="margin:0 0 14px;color:#aaa;line-height:1.5;font-size:13px">Informe o dia em que não poderá atender. O WhatsApp da barbearia será aberto com a mensagem pronta para você enviar.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;align-items:end">
+              <label style="font-size:11px;color:#aaa">Data da ausência<input class="field" id="absenceDate" type="date" style="display:block;width:100%;margin-top:6px" /></label>
+              <label style="font-size:11px;color:#aaa">Motivo (opcional)<input class="field" id="absenceReason" maxlength="180" placeholder="Ex.: compromisso pessoal" style="display:block;width:100%;margin-top:6px" /></label>
+              <button class="button" id="absenceSubmit" type="button">Avisar pelo WhatsApp</button>
+            </div>
+            <p id="absenceResult" role="status" style="margin:10px 0 0;color:#e7be73;font-size:12px"></p>
+          </section>
           <div class="stats">
           <div class="stat"><small>Total</small><b id="totalStat">0</b></div>
           <div class="stat">
@@ -2859,6 +2869,31 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && !tutorialModal.classList.contains("hidden"))
           closeTutorial();
+      });
+      const absenceDate = document.querySelector("#absenceDate");
+      const absenceReason = document.querySelector("#absenceReason");
+      const absenceSubmit = document.querySelector("#absenceSubmit");
+      const absenceResult = document.querySelector("#absenceResult");
+      absenceDate.min = today();
+      absenceDate.value = today();
+      absenceSubmit.addEventListener("click", () => {
+        const date = absenceDate.value;
+        if (!date || date < today()) {
+          absenceResult.textContent = "Escolha hoje ou uma data futura.";
+          absenceResult.style.color = "#ef9b89";
+          return;
+        }
+        const reason = absenceReason.value.trim();
+        const message = [
+          "Olá, Jhoe Barbearia! Quero avisar que não poderei abrir/atender nesta data.",
+          "DATA: " + new Date(date + "T12:00:00").toLocaleDateString("pt-BR", { dateStyle: "long" }),
+          reason ? "MOTIVO: " + reason : "",
+          "",
+          "Por favor, organizem a agenda e avisem os clientes, se necessário."
+        ].filter(Boolean).join("\\n");
+        absenceResult.textContent = "Abrindo o WhatsApp. Revise e envie a mensagem para confirmar o aviso.";
+        absenceResult.style.color = "#e7be73";
+        window.open("https://wa.me/5519992489256?text=" + encodeURIComponent(message), "_blank", "noopener");
       });
       if ("serviceWorker" in navigator)
         navigator.serviceWorker.register("sw.js").catch(() => {});
