@@ -1281,7 +1281,7 @@
             As mudanças salvas aqui aparecem no site e também controlam a
             duração dos horários.
           </p>
-          <h3>Barbeiros</h3>
+          <section class="new-plan" id="locationEditor"><h4>📍 Endereço da barbearia</h4><p style="color:#aaa;font-size:12px;margin:0 0 12px">Altere o endereço e o link do Google Maps. A mudança será publicada para os clientes.</p><label style="display:block;color:#aaa;font-size:11px;margin-bottom:6px">Endereço completo</label><input class="config-input" id="siteAddress" maxlength="500" placeholder="Rua, número, bairro, cidade, estado e CEP" style="height:46px;margin-bottom:10px"><label style="display:block;color:#aaa;font-size:11px;margin-bottom:6px">Link do Google Maps</label><input class="config-input" id="siteMapsUrl" maxlength="1000" type="url" placeholder="https://maps.google.com/..." style="height:46px;margin-bottom:12px"><button class="button" id="saveLocationBtn" type="button">Salvar novo endereço</button><p class="save-result" id="locationResult" role="status" aria-live="polite"></p></section><h3>Barbeiros</h3>
           <div class="new-plan">
             <h4>Cadastrar barbeiro</h4>
             <div class="barber-create">
@@ -2245,6 +2245,8 @@
           sitePlans = data.plans || [];
           siteBarbers = data.barbers || [];
           siteProducts = data.products || [];
+          document.querySelector("#siteAddress").value = data.location?.address || "";
+          document.querySelector("#siteMapsUrl").value = data.location?.maps_url || "";
           renderConfig();
         } catch (e) {
           serviceEditor.innerHTML =
@@ -2253,6 +2255,24 @@
           planEditor.innerHTML = "";
         }
       }
+      const saveLocationBtn = document.querySelector("#saveLocationBtn");
+      saveLocationBtn.onclick = async () => {
+        const address = document.querySelector("#siteAddress").value.trim();
+        const maps_url = document.querySelector("#siteMapsUrl").value.trim();
+        const result = document.querySelector("#locationResult");
+        if (address.length < 10 || !/^https?:\\/\\//i.test(maps_url)) {
+          result.textContent = "Preencha o endereço completo e um link válido do Google Maps.";
+          result.style.color = "#ef9b89"; return;
+        }
+        saveLocationBtn.disabled = true; result.textContent = "Salvando endereço..."; result.style.color = "#e7be73";
+        try {
+          const data = await adminFetch("", { method: "POST", body: JSON.stringify({ kind: "location", address, maps_url }) });
+          result.textContent = "Endereço atualizado e publicado no site."; result.style.color = "#8dc99e";
+          document.querySelector("#siteAddress").value = data.location.address;
+          document.querySelector("#siteMapsUrl").value = data.location.maps_url;
+        } catch (error) { result.textContent = error.message; result.style.color = "#ef9b89"; }
+        finally { saveLocationBtn.disabled = false; }
+      };
       const newBarberName = document.querySelector("#newBarberName"),
         newBarberPhone = document.querySelector("#newBarberPhone"),
         createBarberBtn = document.querySelector("#createBarberBtn");
