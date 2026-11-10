@@ -210,6 +210,20 @@ if(heroScheduleButton&&heroCancelButton){
 @keyframes jhoeFingerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes jhoeRefreshIn{from{opacity:0;translate:-50% 10px}to{opacity:1;translate:-50% 0}}
 @media(prefers-reduced-motion:reduce){.jhoe-mobile-photo-refresh .finger{animation:none}.jhoe-mobile-photo-refresh.show{animation:none}}
+
+/* Destaque da localização para facilitar encontrar a barbearia */
+.location{position:relative;overflow:hidden;margin-top:88px;padding:clamp(26px,4vw,48px);border:1px solid rgba(231,190,115,.55);border-radius:18px;background:radial-gradient(ellipse at 8% 15%,rgba(231,190,115,.2),transparent 42%),linear-gradient(135deg,#191916 0%,#0d0f0f 72%);box-shadow:0 18px 55px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.045)}
+.location:before{content:"";position:absolute;inset:10px;border:1px solid rgba(231,190,115,.12);border-radius:12px;pointer-events:none}
+.location-mark{width:92px;height:92px;background:rgba(231,190,115,.1);border:1px solid rgba(231,190,115,.65);font-size:43px;color:#f0ca82;box-shadow:0 0 35px rgba(231,190,115,.16)}
+.location-copy{position:relative;z-index:1}
+.location-copy .ey{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid rgba(231,190,115,.35);border-radius:30px;background:rgba(231,190,115,.09);color:#f0ca82;font-size:10px;font-weight:800;letter-spacing:.18em}
+.location h2{margin:12px 0 16px}
+#publicBarbershopAddress{display:flex;align-items:flex-start;gap:11px;max-width:720px;margin:18px 0 0;padding:17px 18px;border:1px solid rgba(231,190,115,.35);border-left:4px solid #d9ad62;border-radius:9px;background:rgba(231,190,115,.075);color:#fff;font-size:clamp(14px,1.7vw,17px);font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.location-actions{margin-top:18px;gap:12px}
+.location .mapbtn{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:14px 21px;border-radius:7px;font-size:11px}
+.location .primary-map{box-shadow:0 7px 22px rgba(210,165,88,.2)}
+.location .hours-box{margin-top:24px}
+@media(max-width:600px){.location{margin:55px 12px 22px;padding:25px 18px;border-radius:14px;gap:15px}.location:before{inset:6px;border-radius:10px}.location-mark{width:62px;height:62px;font-size:31px}.location h2{font-size:34px;margin:10px 0 13px}#publicBarbershopAddress{padding:14px 13px;font-size:14px;line-height:1.55}.location .mapbtn{min-height:50px;font-size:10px}.location-actions{gap:9px}.location .hours-box{margin-top:18px}}
 </style>
 <div class="jhoe-mobile-photo-refresh" id="jhoe-mobile-photo-refresh" role="status" aria-live="polite">
  <span class="finger" aria-hidden="true">👆</span>
