@@ -195,5 +195,54 @@ if(heroScheduleButton&&heroCancelButton){
 </div>
 <script>
 (()=>{const api="https://oxkjzsbccgahrqubfeja.supabase.co/functions/v1/barbershop-bookings",openButton=document.querySelector("#clientCancelOpen"),modal=document.querySelector("#clientCancelModal"),form=document.querySelector("#clientCancelForm"),closeButton=document.querySelector("#clientCancelClose"),submit=document.querySelector("#clientCancelSubmit"),status=document.querySelector("#clientCancelStatus"),code=document.querySelector("#clientCancelCode"),phone=document.querySelector("#clientCancelPhone");function open(){status.textContent="";status.className="client-cancel-status";modal.classList.remove("hidden");document.body.style.overflow="hidden";setTimeout(()=>code.focus(),80)}function close(){modal.classList.add("hidden");document.body.style.overflow=""}openButton.addEventListener("click",open);closeButton.addEventListener("click",close);modal.addEventListener("click",event=>{if(event.target===modal)close()});document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!modal.classList.contains("hidden"))close()});form.addEventListener("submit",async event=>{event.preventDefault();const bookingId=Number(code.value),phoneDigits=phone.value.replace(/\D/g,"");status.className="client-cancel-status";if(!Number.isInteger(bookingId)||bookingId<1||phoneDigits.length<10){status.textContent="Confira o código e informe o WhatsApp completo com DDD.";status.classList.add("error");return}if(!confirm("Deseja realmente cancelar esta reserva? O horário será liberado para outro cliente."))return;const noticeWindow=window.open("about:blank","jhoe_cancel_notice");submit.disabled=true;submit.textContent="Cancelando...";try{const response=await fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kind:"cancel_booking",booking_id:bookingId,phone:phoneDigits})}),data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||"Não foi possível cancelar agora.");const booking=data.booking||{},barberPhone=String(booking.barber_phone||"").replace(/\D/g,"");status.textContent="Agendamento cancelado. O horário já está livre.";status.classList.add("success");const message=`Olá, ${booking.barber_name||"equipe da Jhoe Barbearia"}. Cancelei meu agendamento pelo site.\n\nCliente: ${booking.customer_name||"Cliente"}\nReserva: #${booking.id||bookingId}\nServiço: ${booking.service||""}\nData: ${booking.booking_date||""}\nHorário: ${String(booking.booking_time||"").slice(0,5)}`;if(barberPhone){const url=`https://wa.me/${barberPhone}?text=${encodeURIComponent(message)}`;if(noticeWindow)noticeWindow.location.href=url;else window.location.href=url}else if(noticeWindow)noticeWindow.close();form.reset()}catch(error){if(noticeWindow)noticeWindow.close();status.textContent=error.message;status.classList.add("error")}finally{submit.disabled=false;submit.textContent="Confirmar cancelamento"}})})();
-</script></body></html>
+</script>
+<style>
+/* Aviso de atualização das fotos — somente celular */
+.jhoe-mobile-photo-refresh{display:none}
+@media(max-width:760px){
+ .jhoe-mobile-photo-refresh{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:110;width:min( calc(100vw - 28px), 390px);padding:12px 14px;border:1px solid #b88a47;border-radius:14px;background:linear-gradient(135deg,#201b12,#101010);color:#f4ead7;box-shadow:0 12px 34px #0009;align-items:center;gap:10px;font:12px/1.4 Arial,sans-serif}
+ .jhoe-mobile-photo-refresh.show{display:flex;animation:jhoeRefreshIn .35s ease both}
+ .jhoe-mobile-photo-refresh .finger{font-size:29px;line-height:1;animation:jhoeFingerBounce 1s ease-in-out infinite}
+ .jhoe-mobile-photo-refresh .copy{flex:1;min-width:0}
+ .jhoe-mobile-photo-refresh strong{display:block;color:#edc978;font-size:12px;margin-bottom:2px}
+ .jhoe-mobile-photo-refresh button{border:0;border-radius:8px;padding:10px 12px;background:linear-gradient(135deg,#eccb85,#b68746);color:#17110a;font-size:11px;font-weight:800;white-space:nowrap}
+}
+@keyframes jhoeFingerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes jhoeRefreshIn{from{opacity:0;translate:-50% 10px}to{opacity:1;translate:-50% 0}}
+@media(prefers-reduced-motion:reduce){.jhoe-mobile-photo-refresh .finger{animation:none}.jhoe-mobile-photo-refresh.show{animation:none}}
+</style>
+<div class="jhoe-mobile-photo-refresh" id="jhoe-mobile-photo-refresh" role="status" aria-live="polite">
+ <span class="finger" aria-hidden="true">👆</span>
+ <span class="copy"><strong>As fotos dos barbeiros não apareceram?</strong> Toque em atualizar para carregar novamente.</span>
+ <button type="button" id="jhoe-photo-refresh-button">Atualizar</button>
+</div>
+<script>
+(()=> {
+ const notice=document.getElementById("jhoe-mobile-photo-refresh");
+ const refresh=document.getElementById("jhoe-photo-refresh-button");
+ if(!notice||!refresh)return;
+ let visible=false;
+ function showNotice(){
+  if(!window.matchMedia("(max-width: 760px)").matches)return;
+  if(visible)return;
+  visible=true;
+  notice.classList.add("show");
+ }
+ document.addEventListener("error",event=>{
+  const img=event.target;
+  if(!(img instanceof HTMLImageElement)||!img.classList.contains("professional-photo"))return;
+  if(!img.dataset.jhoeRetried){
+   img.dataset.jhoeRetried="1";
+   const original=img.getAttribute("src")||"";
+   if(original){
+    img.src=original+(original.includes("?")?"&":"?")+"jhoe_reload="+Date.now();
+    return;
+   }
+  }
+  showNotice();
+ },true);
+ refresh.addEventListener("click",()=>window.location.reload());
+})();
+</script>
+</body></html>
 
