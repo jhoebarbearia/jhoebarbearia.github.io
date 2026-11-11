@@ -2313,7 +2313,7 @@
         const address = document.querySelector("#siteAddress").value.trim();
         const maps_url = document.querySelector("#siteMapsUrl").value.trim();
         const result = document.querySelector("#locationResult");
-        if (address.length < 10 || !/^https?:\\/\\//i.test(maps_url)) {
+        if (address.length < 10 || !/^https?:\/\//i.test(maps_url)) {
           result.textContent = "Preencha o endereço completo e um link válido do Google Maps.";
           result.style.color = "#ef9b89"; return;
         }
