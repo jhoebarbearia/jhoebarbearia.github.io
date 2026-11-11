@@ -336,5 +336,90 @@ if(heroScheduleButton&&heroCancelButton){
 <script>
 (()=>{const input=document.getElementById("date"),title=document.getElementById("dateButtonTitle"),subtitle=document.getElementById("dateButtonSubtitle");if(!input||!title||!subtitle)return;const update=()=>{if(!input.value){title.textContent="TOQUE AQUI PARA ESCOLHER";subtitle.textContent="Escolher uma data";return}const [y,m,d]=input.value.split("-").map(Number);const date=new Date(y,m-1,d);title.textContent=date.toLocaleDateString("pt-BR",{weekday:"long"});subtitle.textContent=date.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});};input.addEventListener("change",update);update();})();
 </script>
+
+<style id="jhoe-senior-friendly">
+/* Acessibilidade geral: leitura fácil, contraste e áreas de toque maiores */
+html{font-size:18px;scroll-padding-top:20px}
+body{font-size:18px;line-height:1.65}
+p{line-height:1.7}
+.lead,.head>p:last-child,.club-head>p:last-child,.location-copy>p:last-of-type{font-size:17px;line-height:1.75}
+.step{font-size:20px;line-height:1.4}
+.step span{width:34px;height:34px;font-size:15px;vertical-align:middle}
+.service{min-height:76px;padding:17px}
+.service b{font-size:17px;line-height:1.4}
+.service small{font-size:14px;line-height:1.5}
+.field,.chat-field,.client-cancel-card input{min-height:58px;font-size:18px;padding:12px 15px}
+.field::placeholder,.chat-field::placeholder,.client-cancel-card input::placeholder{font-size:16px;color:#625d55;opacity:1}
+.times{gap:10px}
+.times button{min-height:56px;padding:12px 7px;font-size:17px;font-weight:700}
+button,.cta,.send,.mapbtn,.shop-access,.insta,.wa,.admin-access,.plan a,.plan button,.chat-options button,.chat-submit,.client-cancel-launcher,.client-cancel-submit{min-height:52px;font-size:15px;letter-spacing:normal}
+.cta,.send,.mapbtn,.plan a,.plan button{padding:15px 20px}
+.send{font-size:16px;font-weight:800}
+.note,.booking-status{font-size:14px;line-height:1.6}
+.row small{font-size:12px;letter-spacing:.04em;color:#b8b1a6}
+.row b{font-size:16px;line-height:1.5}
+.hours-box span{font-size:13px;line-height:1.5}
+.hours-box b{font-size:16px;line-height:1.5}
+.ey,.location-copy .ey{font-size:13px;letter-spacing:.08em}
+.location .mapbtn{font-size:14px}
+#publicBarbershopAddress{font-size:18px;line-height:1.7}
+.plan p{font-size:15px;line-height:1.65}
+.plan strong{font-size:30px}
+.club-rules{font-size:13px;line-height:1.6}
+.brand small{font-size:10px;letter-spacing:.12em}
+.wa,.insta,.shop-access{font-size:14px}
+.assistant-head small,.assistant-foot{font-size:12px}
+.chat-bubble{font-size:16px;line-height:1.65}
+.chat-options button,.chat-link{font-size:14px;padding:12px 15px}
+.chat-options button small{font-size:12px}
+.assistant-close,.client-cancel-close{min-width:48px;min-height:48px}
+.client-cancel-card p{font-size:16px;line-height:1.6}
+.client-cancel-card label{font-size:14px;letter-spacing:.03em}
+.client-cancel-note{font-size:14px!important}
+.jhoe-mobile-photo-refresh{font-size:14px;line-height:1.55}
+.jhoe-mobile-photo-refresh strong{font-size:15px}
+.jhoe-mobile-photo-refresh button{min-height:48px;font-size:14px;padding:12px 15px}
+a,button,input,select,textarea{touch-action:manipulation}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:4px solid #176b9b!important;outline-offset:3px!important}
+button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:780px){
+ .top{min-height:78px;height:auto;padding-top:12px;padding-bottom:12px;gap:12px}
+ .top-actions{gap:8px}
+ .grid{gap:16px}
+ .section{padding:24px 18px}
+ .summary{padding:24px}
+ .hero .lead{font-size:18px}
+ .location .mapbtn{min-height:56px;font-size:15px}
+}
+@media(max-width:540px){
+ body{font-size:18px}
+ .top{align-items:center}
+ .brand b{font-size:14px}
+ .brand small{font-size:9px}
+ .hero{padding-left:18px;padding-right:18px}
+ .hero .lead{font-size:18px;line-height:1.7}
+ .book{padding-left:12px;padding-right:12px}
+ .section{padding:22px 15px}
+ .step{font-size:19px}
+ .service{min-height:82px}
+ .times{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .times button{min-height:60px;font-size:18px}
+ .cols{gap:14px}
+ .field{min-height:60px;font-size:18px}
+ .summary{padding:20px}
+ .send{min-height:60px;font-size:16px}
+ .location{margin-left:10px;margin-right:10px}
+ .location h2{font-size:36px}
+ .club{margin-left:10px;margin-right:10px}
+ .client-cancel-launcher{min-height:52px;font-size:13px}
+}
+@media(prefers-contrast:more){
+ body,.book,.card,.summary,.section,.service,.times button{border-color:#555}
+ .lead,.note,.choose-date,.date-hint,.row small{color:#49443c}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+</style>
 </body></html>
 
