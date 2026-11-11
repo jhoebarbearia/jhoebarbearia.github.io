@@ -2661,7 +2661,8 @@
         dashboard.classList.remove("hidden");
         fromDate.value = today();
         toDate.value = plusDays(today(), 30);
-        await Promise.all([loadAgenda(), loadConfig(), loadMemberships(), loadTimeBlocks()]);
+        await loadConfig();
+        await Promise.all([loadAgenda(), loadMemberships(), loadTimeBlocks()]);
         populateManualBarbers();
         document.querySelector("#dashboardDate").innerHTML =
           new Date().toLocaleDateString("pt-BR", {
