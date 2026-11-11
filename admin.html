@@ -1520,25 +1520,27 @@
         return data;
       }
       async function login() {
-        const email = emailEl.value.trim(),
-          password = passwordEl.value;
+        const email = emailEl.value.trim().toLowerCase(),
+          password = passwordEl.value,
+          button = document.querySelector("#loginBtn");
         if (!email || password.length < 8) {
-          setLoginMessage(
-            "Preencha o e-mail e uma senha com pelo menos 8 caracteres.",
-            true,
-          );
+          setLoginMessage("Preencha o e-mail e a senha cadastrada (mínimo de 8 caracteres).", true);
           return;
         }
-        setLoginMessage("Entrando...");
+        button.disabled = true;
+        button.textContent = "Verificando acesso...";
+        setLoginMessage("Conectando ao painel...");
         try {
-          const data = await auth("token?grant_type=password", {
-            email,
-            password,
-          });
+          const data = await auth("token?grant_type=password", { email, password });
+          if (!data?.access_token) throw new Error("O acesso não foi confirmado pelo servidor. Confira o e-mail e a senha.");
           saveSession(data);
-          showDashboard();
+          await showDashboard();
         } catch (e) {
-          setLoginMessage(e.message, true);
+          clearSession();
+          setLoginMessage(e?.message || "Não foi possível entrar. Tente novamente.", true);
+        } finally {
+          button.disabled = false;
+          button.textContent = "Entrar";
         }
       }
       async function signup() {
@@ -2678,10 +2680,9 @@
         } catch (error) {
           dashboard.classList.add("hidden");
           loginBox.classList.remove("hidden");
-          setLoginMessage(
-            "Acesso validado, mas não foi possível carregar o painel. Atualize a página e tente novamente. " + (error?.message || ""),
-            true,
-          );
+          clearSession();
+          setLoginMessage("O login foi aceito, mas o painel não carregou: " + (error?.message || "erro inesperado") + ". Atualize a página e tente novamente.", true);
+          throw error;
         }
       }
       document.querySelector("#loginBtn").onclick = login;
