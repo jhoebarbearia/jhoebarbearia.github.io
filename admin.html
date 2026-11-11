@@ -1137,28 +1137,21 @@
       <section class="login" id="loginBox">
         <h1>Acesso da barbearia</h1>
         <p>
-          Entre com o e-mail autorizado. No primeiro acesso, crie uma senha com
-          pelo menos 8 caracteres.
+          Acesso sem senha: informe o e-mail autorizado e enviaremos um código
+          de confirmação para a caixa de entrada.
         </p>
         <input
           class="field"
           id="email"
           type="email"
-          autocomplete="username"
+          autocomplete="email"
           placeholder="E-mail autorizado"
-        /><input
-          class="field"
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          minlength="8"
-          placeholder="Senha"
+          value="joelitonsouzam@gmail.com"
         />
+        <button class="field hidden" id="emailCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código recebido por e-mail" />
         <div class="login-actions">
-          <button class="button" id="loginBtn">Entrar</button
-          ><button class="button secondary" id="signupBtn">
-            Primeiro acesso
-          </button>
+          <button class="button" id="loginBtn">Enviar código de acesso</button>
+          <button class="button secondary hidden" id="verifyCodeBtn">Confirmar código</button>
         </div>
         <div class="message" id="loginMessage" aria-live="polite"></div>
       </section>
@@ -1519,55 +1512,57 @@
           );
         return data;
       }
+      let accessCodeSent = false;
       async function login() {
-        const email = emailEl.value.trim().toLowerCase(),
-          password = passwordEl.value,
-          button = document.querySelector("#loginBtn");
-        if (!email || password.length < 8) {
-          setLoginMessage("Preencha o e-mail e a senha cadastrada (mínimo de 8 caracteres).", true);
+        const email = emailEl.value.trim().toLowerCase();
+        const button = document.querySelector("#loginBtn");
+        if (email !== "joelitonsouzam@gmail.com") {
+          setLoginMessage("Este painel é exclusivo do e-mail autorizado.", true);
           return;
         }
         button.disabled = true;
-        button.textContent = "Verificando acesso...";
-        setLoginMessage("Conectando ao painel...");
         try {
-          const data = await auth("token?grant_type=password", { email, password });
-          if (!data?.access_token) throw new Error("O acesso não foi confirmado pelo servidor. Confira o e-mail e a senha.");
+          if (!accessCodeSent) {
+            button.textContent = "Enviando código...";
+            setLoginMessage("Solicitando código de acesso por e-mail...");
+            await auth("otp", { email, create_user: false });
+            accessCodeSent = true;
+            document.querySelector("#emailCode").classList.remove("hidden");
+            document.querySelector("#verifyCodeBtn").classList.remove("hidden");
+            button.classList.add("hidden");
+            setLoginMessage("Código enviado para " + email + ". Confira também a caixa de spam e digite o código recebido.");
+          }
+        } catch (e) {
+          setLoginMessage(e?.message || "Não foi possível enviar o código.", true);
+        } finally {
+          button.disabled = false;
+          button.textContent = "Enviar código de acesso";
+        }
+      }
+      async function verifyEmailCode() {
+        const email = emailEl.value.trim().toLowerCase();
+        const token = document.querySelector("#emailCode").value.trim();
+        const button = document.querySelector("#verifyCodeBtn");
+        if (email !== "joelitonsouzam@gmail.com") {
+          setLoginMessage("Este painel é exclusivo do e-mail autorizado.", true);
+          return;
+        }
+        if (!token) {
+          setLoginMessage("Digite o código enviado para seu e-mail.", true);
+          return;
+        }
+        button.disabled = true;
+        button.textContent = "Confirmando...";
+        try {
+          const data = await auth("verify", { email, token, type: "email" });
+          if (!data?.access_token) throw new Error("O código não foi confirmado. Solicite um novo código.");
           saveSession(data);
           await showDashboard();
         } catch (e) {
-          clearSession();
-          setLoginMessage(e?.message || "Não foi possível entrar. Tente novamente.", true);
+          setLoginMessage(e?.message || "Código inválido ou expirado.", true);
         } finally {
           button.disabled = false;
-          button.textContent = "Entrar";
-        }
-      }
-      async function signup() {
-        const email = emailEl.value.trim(),
-          password = passwordEl.value;
-        if (!email || password.length < 8) {
-          setLoginMessage(
-            "Preencha o e-mail e crie uma senha com pelo menos 8 caracteres.",
-            true,
-          );
-          return;
-        }
-        setLoginMessage("Criando acesso...");
-        try {
-          const data = await auth(
-            "signup?redirect_to=" + encodeURIComponent(adminUrl),
-            { email, password },
-          );
-          if (data.access_token) {
-            saveSession(data);
-            showDashboard();
-          } else
-            setLoginMessage(
-              "Cadastro criado. Confira o e-mail para confirmar o acesso e depois volte para entrar.",
-            );
-        } catch (e) {
-          setLoginMessage(e.message, true);
+          button.textContent = "Confirmar código";
         }
       }
       async function refreshSession() {
@@ -2686,7 +2681,7 @@
         }
       }
       document.querySelector("#loginBtn").onclick = login;
-      document.querySelector("#signupBtn").onclick = signup;
+      document.querySelector("#verifyCodeBtn").onclick = verifyEmailCode;
       document.querySelector("#refreshBtn").onclick = loadAgenda;
       document.querySelector("#refreshMemberships").onclick = loadMemberships;
       document.querySelector("#logoutBtn").onclick = () => {
