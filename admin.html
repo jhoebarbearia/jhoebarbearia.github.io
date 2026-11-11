@@ -1173,6 +1173,7 @@
         </div>
         <nav class="admin-nav" aria-label="Seções do painel">
           <button type="button" class="active" data-target="agendaSection">Agenda</button>
+          <button type="button" data-target="timeBlocksSection">Bloquear horários</button>
           <button type="button" data-target="manualBooking">+ Agendar cliente</button>
           <button type="button" data-target="membershipSection">Clube Jhoe</button>
           <button type="button" data-target="configSection">Configurações</button>
@@ -1218,6 +1219,20 @@
           <div class="agenda" id="agenda">
           <div class="loading">Carregando agenda...</div>
           </div>
+        </section>
+        <section class="admin-section section-shell" id="timeBlocksSection">
+          <div class="section-heading"><div><span class="section-kicker">Disponibilidade</span><h2>Bloquear um intervalo</h2><p>Feche somente o período em que tiver um compromisso. Os demais horários continuam disponíveis.</p></div></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end">
+            <label>Profissional<select class="field" id="blockBarber" required><option value="">Escolha o profissional</option></select></label>
+            <label>Data<input class="field" id="blockDate" type="date" required></label>
+            <label>De<input class="field" id="blockStart" type="time" value="14:00" required></label>
+            <label>Até<input class="field" id="blockEnd" type="time" value="16:00" required></label>
+            <label>Motivo (opcional)<input class="field" id="blockReason" maxlength="180" placeholder="Ex.: compromisso pessoal"></label>
+            <button class="button" id="saveTimeBlock" type="button">Bloquear horário</button>
+          </div>
+          <p id="timeBlockResult" role="status" style="margin:12px 0;color:#e7be73"></p>
+          <h3 style="margin:18px 0 10px">Horários bloqueados</h3>
+          <div id="timeBlockList"><div class="loading">Carregando bloqueios...</div></div>
         </section>
         <section class="admin-section manual-booking" id="manualBooking">
           <div class="section-heading">
@@ -1782,6 +1797,11 @@
           agendaEl.innerHTML = '<div class="empty">' + e.message + "</div>";
         }
       }
+      const blockBarber=document.querySelector("#blockBarber"),blockDate=document.querySelector("#blockDate"),blockStart=document.querySelector("#blockStart"),blockEnd=document.querySelector("#blockEnd"),blockReason=document.querySelector("#blockReason"),timeBlockList=document.querySelector("#timeBlockList"),timeBlockResult=document.querySelector("#timeBlockResult");
+      blockDate.min=today();blockDate.value=today();
+      function fillBlockBarbers(){const selected=blockBarber.value;blockBarber.innerHTML='<option value="">Escolha o profissional</option>';siteBarbers.filter(x=>x.active).forEach(x=>{const option=document.createElement("option");option.value=x.id;option.textContent=x.name;blockBarber.appendChild(option)});if([...blockBarber.options].some(x=>x.value===selected))blockBarber.value=selected;}
+      async function loadTimeBlocks(){timeBlockList.innerHTML='<div class="loading">Carregando bloqueios...</div>';try{const from=today(),to=plusDays(from,60),data=await adminFetch("?view=blocks&from="+encodeURIComponent(from)+"&to="+encodeURIComponent(to));timeBlockList.innerHTML="";if(!data.blocks?.length){timeBlockList.innerHTML='<div class="empty">Nenhum horário bloqueado nos próximos 60 dias.</div>';return;}data.blocks.forEach(item=>{const card=document.createElement("article");card.className="booking";card.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap";const info=document.createElement("div"),title=document.createElement("b"),detail=document.createElement("p");const barber=siteBarbers.find(x=>Number(x.id)===Number(item.barber_id));title.textContent=(barber?.name||"Profissional")+" · "+new Date(item.block_date+"T12:00:00").toLocaleDateString("pt-BR");detail.textContent=String(item.start_time).slice(0,5)+" às "+String(item.end_time).slice(0,5)+(item.reason?" · "+item.reason:"");info.append(title,detail);const remove=document.createElement("button");remove.className="button secondary";remove.type="button";remove.textContent="Liberar horário";remove.onclick=async()=>{if(!confirm("Deseja liberar esse intervalo para agendamentos?"))return;remove.disabled=true;try{await adminFetch("",{method:"POST",body:JSON.stringify({kind:"remove_time_block",id:item.id})});await loadTimeBlocks();}catch(error){alert(error.message);remove.disabled=false;}};card.append(info,remove);timeBlockList.appendChild(card);});}catch(error){timeBlockList.innerHTML='<div class="empty"></div>';timeBlockList.firstChild.textContent=error.message;}}
+      document.querySelector("#saveTimeBlock").onclick=async()=>{const barber_id=Number(blockBarber.value),date=blockDate.value,start_time=blockStart.value,end_time=blockEnd.value;if(!barber_id||!date||!start_time||!end_time||start_time>=end_time){timeBlockResult.textContent="Confira o profissional, a data e os horários. O horário final deve ser depois do inicial.";return;}const button=document.querySelector("#saveTimeBlock");button.disabled=true;timeBlockResult.textContent="Salvando bloqueio...";try{await adminFetch("",{method:"POST",body:JSON.stringify({kind:"time_block",barber_id,date,start_time,end_time,reason:blockReason.value.trim()})});timeBlockResult.textContent="Intervalo bloqueado! Os clientes não poderão agendar nesse período.";blockReason.value="";await loadTimeBlocks();}catch(error){timeBlockResult.textContent=error.message;}finally{button.disabled=false;}};
       let memberships = [];
       const membershipRequests = document.querySelector("#membershipRequests"),
         pendingMemberships = document.querySelector("#pendingMemberships");
@@ -2273,6 +2293,7 @@
           siteServices = data.services || [];
           sitePlans = data.plans || [];
           siteBarbers = data.barbers || [];
+          fillBlockBarbers();
           siteProducts = data.products || [];
           document.querySelector("#siteAddress").value = data.location?.address || "";
           document.querySelector("#siteMapsUrl").value = data.location?.maps_url || "";
@@ -2640,7 +2661,7 @@
         dashboard.classList.remove("hidden");
         fromDate.value = today();
         toDate.value = plusDays(today(), 30);
-        await Promise.all([loadAgenda(), loadConfig(), loadMemberships()]);
+        await Promise.all([loadAgenda(), loadConfig(), loadMemberships(), loadTimeBlocks()]);
         populateManualBarbers();
         document.querySelector("#dashboardDate").innerHTML =
           new Date().toLocaleDateString("pt-BR", {
