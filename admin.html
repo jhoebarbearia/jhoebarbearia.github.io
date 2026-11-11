@@ -1587,6 +1587,7 @@
           ...options,
           headers: {
             ...(options.headers || {}),
+            apikey: publishableKey,
             Authorization: "Bearer " + session.access_token,
             "Content-Type": "application/json",
           },
@@ -2661,18 +2662,27 @@
         dashboard.classList.remove("hidden");
         fromDate.value = today();
         toDate.value = plusDays(today(), 30);
-        await loadConfig();
-        await Promise.all([loadAgenda(), loadMemberships(), loadTimeBlocks()]);
-        populateManualBarbers();
-        document.querySelector("#dashboardDate").innerHTML =
-          new Date().toLocaleDateString("pt-BR", {
-            timeZone: "America/Sao_Paulo",
-            weekday: "long",
-            day: "2-digit",
-            month: "long",
-          }) + "<br>Jhoe Barbearia · Desde 2001";
-        if (!localStorage.getItem("jhoe_tutorial_seen_v1"))
-          setTimeout(openTutorial, 350);
+        try {
+          await loadConfig();
+          await Promise.all([loadAgenda(), loadMemberships(), loadTimeBlocks()]);
+          populateManualBarbers();
+          document.querySelector("#dashboardDate").innerHTML =
+            new Date().toLocaleDateString("pt-BR", {
+              timeZone: "America/Sao_Paulo",
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+            }) + "<br>Jhoe Barbearia · Desde 2001";
+          if (!localStorage.getItem("jhoe_tutorial_seen_v1"))
+            setTimeout(openTutorial, 350);
+        } catch (error) {
+          dashboard.classList.add("hidden");
+          loginBox.classList.remove("hidden");
+          setLoginMessage(
+            "Acesso validado, mas não foi possível carregar o painel. Atualize a página e tente novamente. " + (error?.message || ""),
+            true,
+          );
+        }
       }
       document.querySelector("#loginBtn").onclick = login;
       document.querySelector("#signupBtn").onclick = signup;
