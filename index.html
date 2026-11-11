@@ -25,23 +25,24 @@ html,body{max-width:100%;overflow-x:hidden}img,svg{max-width:100%}
   h1{font-size:48px}.times{grid-template-columns:repeat(3,1fr)}
 }
 
-/* Mobile header layout correction */
+/* Mobile header layout — alinhamento limpo */
 @media(max-width:560px){
-  .top{height:auto;min-height:126px;padding:12px 14px;display:grid;grid-template-columns:1fr;gap:10px;align-content:center}
+  .top{height:auto;min-height:0;padding:12px 14px;display:flex;flex-direction:column;align-items:stretch;gap:10px}
   .brand{width:max-content;max-width:100%}
-  .top-actions{width:100%;margin:0;display:grid;grid-template-columns:minmax(104px,1fr) repeat(4,44px);gap:6px;align-items:center}
-  .live-clock{width:100%;min-width:0;justify-content:center;height:44px;padding:0 8px}
-  .insta,.wa,.shop-access,.admin-access{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;padding:0!important;border-radius:50%;display:grid;place-items:center}
-  .wa{font-size:0}
-  .wa:after{content:"WA";font-size:10px;font-weight:700;letter-spacing:.04em}
-  .shop-access span{display:none}
+  .top-actions{width:100%;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:7px}
+  .live-clock{height:40px;padding:0 9px;flex:1 1 105px;min-width:100px;justify-content:center}
+  .insta,.wa,.shop-access,.admin-access{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;padding:0!important;border-radius:50%;display:grid;place-items:center;flex:0 0 40px}
+  .insta span,.wa span,.shop-access span{display:none}
+  .refresh-help{order:10;flex:1 0 100%;width:100%;max-width:none;min-height:38px;justify-content:center;padding:7px 10px;font-size:11px;text-align:center;border-radius:9px}
+  .refresh-finger{font-size:23px}
   .hero{padding-top:22px}
 }
 @media(max-width:360px){
   .top{padding-left:10px;padding-right:10px}
-  .top-actions{grid-template-columns:minmax(96px,1fr) repeat(4,40px);gap:4px}
-  .insta,.wa,.shop-access,.admin-access{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}
-  .live-clock{height:40px}.clock-time{font-size:10px}
+  .top-actions{gap:5px}
+  .insta,.wa,.shop-access,.admin-access{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;flex-basis:38px}
+  .live-clock{height:38px;flex-basis:95px}
+  .refresh-help{font-size:10px}
 }
 
 /* WhatsApp icon */
@@ -255,11 +256,10 @@ if(heroScheduleButton&&heroCancelButton){
 (()=>{const api="https://oxkjzsbccgahrqubfeja.supabase.co/functions/v1/barbershop-bookings",openButton=document.querySelector("#clientCancelOpen"),modal=document.querySelector("#clientCancelModal"),form=document.querySelector("#clientCancelForm"),closeButton=document.querySelector("#clientCancelClose"),submit=document.querySelector("#clientCancelSubmit"),status=document.querySelector("#clientCancelStatus"),code=document.querySelector("#clientCancelCode"),phone=document.querySelector("#clientCancelPhone");function open(){status.textContent="";status.className="client-cancel-status";modal.classList.remove("hidden");document.body.style.overflow="hidden";setTimeout(()=>code.focus(),80)}function close(){modal.classList.add("hidden");document.body.style.overflow=""}openButton.addEventListener("click",open);closeButton.addEventListener("click",close);modal.addEventListener("click",event=>{if(event.target===modal)close()});document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!modal.classList.contains("hidden"))close()});form.addEventListener("submit",async event=>{event.preventDefault();const bookingId=Number(code.value),phoneDigits=phone.value.replace(/\D/g,"");status.className="client-cancel-status";if(!Number.isInteger(bookingId)||bookingId<1||phoneDigits.length<10){status.textContent="Confira o código e informe o WhatsApp completo com DDD.";status.classList.add("error");return}if(!confirm("Deseja realmente cancelar esta reserva? O horário será liberado para outro cliente."))return;const noticeWindow=window.open("about:blank","jhoe_cancel_notice");submit.disabled=true;submit.textContent="Cancelando...";try{const response=await fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kind:"cancel_booking",booking_id:bookingId,phone:phoneDigits})}),data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||"Não foi possível cancelar agora.");const booking=data.booking||{},barberPhone=String(booking.barber_phone||"").replace(/\D/g,"");status.textContent="Agendamento cancelado. O horário já está livre.";status.classList.add("success");const message=`Olá, ${booking.barber_name||"equipe da Jhoe Barbearia"}. Cancelei meu agendamento pelo site.\n\nCliente: ${booking.customer_name||"Cliente"}\nReserva: #${booking.id||bookingId}\nServiço: ${booking.service||""}\nData: ${booking.booking_date||""}\nHorário: ${String(booking.booking_time||"").slice(0,5)}`;if(barberPhone){const url=`https://wa.me/${barberPhone}?text=${encodeURIComponent(message)}`;if(noticeWindow)noticeWindow.location.href=url;else window.location.href=url}else if(noticeWindow)noticeWindow.close();form.reset()}catch(error){if(noticeWindow)noticeWindow.close();status.textContent=error.message;status.classList.add("error")}finally{submit.disabled=false;submit.textContent="Confirmar cancelamento"}})})();
 </script>
 <style>
-.refresh-help{display:flex;align-items:center;gap:6px;max-width:205px;padding:6px 9px;border:1px solid #8b6a3d;border-radius:10px;background:#17130d;color:#f0d29b;font-size:10px;line-height:1.25;text-align:left;cursor:pointer}
+.refresh-help{display:flex;align-items:center;gap:7px;max-width:230px;min-height:38px;padding:6px 10px;border:1px solid #8b6a3d;border-radius:9px;background:#17130d;color:#f0d29b;font-size:10px;line-height:1.3;text-align:left;cursor:pointer;flex:0 1 auto}
 .refresh-finger{font-size:25px;flex:0 0 auto;transform-origin:50% 15%;animation:jhoeTapFinger 1.15s ease-in-out infinite}
 @keyframes jhoeTapFinger{0%,100%{transform:translateY(-4px) scale(1)}35%{transform:translateY(4px) scale(.92)}55%{transform:translateY(-1px) scale(1.03)}}
 .refresh-help:hover{background:#292013;border-color:#e7be73}
-@media(max-width:760px){.top-actions{gap:7px}.refresh-help{max-width:132px;padding:5px 6px;font-size:9px}.refresh-finger{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.refresh-finger{animation:none}}
 
 /* Destaque da localização para facilitar encontrar a barbearia */
