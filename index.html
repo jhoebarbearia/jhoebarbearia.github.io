@@ -424,11 +424,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
 <style id="jhoe-easy-access">
 /* Navegação simplificada e acessível em todo o site */
-.jhoe-easy-bar{position:relative;z-index:100;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:#fff7e7;color:#21180c;border-bottom:2px solid #bd8b3e;font:700 16px/1.3 Arial,sans-serif}
-.jhoe-easy-bar strong{margin-right:5px}
-.jhoe-easy-bar button{min-height:48px;padding:10px 16px;border:2px solid #77501c;border-radius:9px;background:#fff;color:#21180c;font:700 16px/1.2 Arial,sans-serif;cursor:pointer}
-.jhoe-easy-bar button.primary{background:#754713;color:#fff;border-color:#754713}
-.jhoe-easy-bar button:focus-visible{outline:4px solid #176b9b;outline-offset:3px}
+
+
+
+
+
 body.jhoe-text-up{font-size:21px!important}
 body.jhoe-text-up p,body.jhoe-text-up label,body.jhoe-text-up .step,body.jhoe-text-up .service b,body.jhoe-text-up .service small,body.jhoe-text-up .row b,body.jhoe-text-up .field,body.jhoe-text-up .times button{font-size:1.12em!important}
 body.jhoe-text-down{font-size:17px!important}
@@ -449,9 +449,9 @@ h1,h2{line-height:1.15;letter-spacing:normal}
 .date-button-wrap{min-height:92px}
 .send,.cta{min-height:60px}
 @media(max-width:650px){
- .jhoe-easy-bar{position:sticky;top:0;gap:7px;padding:9px 8px}
- .jhoe-easy-bar strong{width:100%;text-align:center}
- .jhoe-easy-bar button{flex:1;min-width:42%;min-height:50px;padding:9px 7px;font-size:15px}
+ 
+ 
+ 
  .hero{padding-top:20px;padding-bottom:30px}
  .heroLogo{min-height:220px}
  .heroLogo img{width:190px}
@@ -462,27 +462,7 @@ h1,h2{line-height:1.15;letter-spacing:normal}
 }
 @media(prefers-reduced-motion:reduce){.heroLogo img{animation:none!important}}
 </style>
-<nav class="jhoe-easy-bar" id="jhoe-easy-access" aria-label="Facilidades de acessibilidade">
- <strong>Facilitar a leitura:</strong>
- <button type="button" id="jhoe-font-smaller" aria-label="Diminuir tamanho das letras">A− Letras</button>
- <button type="button" id="jhoe-font-bigger" class="primary" aria-label="Aumentar tamanho das letras">A+ Letras</button>
- <button type="button" id="jhoe-contrast-toggle" aria-pressed="false">Alto contraste</button>
- <button type="button" id="jhoe-go-booking" class="primary">Agendar horário</button>
-</nav>
-<script>
-(()=> {
- const body=document.body;
- const smaller=document.getElementById("jhoe-font-smaller");
- const bigger=document.getElementById("jhoe-font-bigger");
- const contrast=document.getElementById("jhoe-contrast-toggle");
- const go=document.getElementById("jhoe-go-booking");
- if(!smaller||!bigger||!contrast||!go)return;
- smaller.addEventListener("click",()=>{body.classList.remove("jhoe-text-up");body.classList.add("jhoe-text-down")});
- bigger.addEventListener("click",()=>{body.classList.remove("jhoe-text-down");body.classList.add("jhoe-text-up")});
- contrast.addEventListener("click",()=>{const enabled=body.classList.toggle("jhoe-contrast");contrast.setAttribute("aria-pressed",String(enabled));contrast.textContent=enabled?"Contraste normal":"Alto contraste"});
- go.addEventListener("click",()=>{const target=document.getElementById("agendar");if(target){target.scrollIntoView({behavior:"smooth",block:"start"});const first=target.querySelector("button,input,a,[tabindex]");if(first)setTimeout(()=>first.focus({preventScroll:true}),350)}});
-})();
-</script>
+
 
 </body></html>
 
