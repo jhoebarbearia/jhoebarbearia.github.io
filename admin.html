@@ -1083,36 +1083,7 @@
         .manual-times button { flex: 1 0 70px; }
         .section-shell, .manual-booking { border-radius: 14px; }
       }
-    
-/* Navegação e áreas do painel com cores distintas para facilitar a localização */
-.admin-nav{display:flex;gap:8px;flex-wrap:wrap;padding:10px;margin:18px 0 25px;border:1px solid #34312a;border-radius:12px;background:#111313}
-.admin-nav button{border:1px solid #454039!important;border-radius:9px!important;background:#1a1c1c!important;color:#ddd!important;font-weight:bold;min-height:42px;transition:transform .2s,border-color .2s,background .2s}
-.admin-nav button:nth-child(4n+1){border-color:#a77c3d!important}
-.admin-nav button:nth-child(4n+2){border-color:#397da1!important}
-.admin-nav button:nth-child(4n+3){border-color:#8064b2!important}
-.admin-nav button:nth-child(4n){border-color:#328467!important}
-.admin-nav button.active{background:#302515!important;color:#f5d18f!important;border-color:#e7be73!important;box-shadow:0 0 0 2px #e7be7325}
-.admin-nav button:hover{transform:translateY(-2px);background:#252626!important}
-.section-shell,.config-panel,.membership-admin{position:relative}
-.section-shell{border-left:4px solid #b78b4b}
-.config-panel{border-left:4px solid #4d91bb;padding-left:16px}
-.membership-admin{border-left:4px solid #9274c2}
-.stat:nth-child(1){border-top:3px solid #4d91bb}
-.stat:nth-child(2){border-top:3px solid #39a47b}
-.stat:nth-child(3){border-top:3px solid #c18a45}
-.stat:nth-child(4){border-top:3px solid #9274c2}
-.booking{border-left-color:#c18a45}
-.booking.completed{border-left-color:#39a47b}
-.booking.cancelled{border-left-color:#bd6c5d}
-.status.pending{background:#f6dfad;color:#765018}
-.status.confirmed{background:#ccebd6;color:#21633c}
-.status.cancelled{background:#f2d0c9;color:#8b382b}
-.button.danger,.action.cancel{color:#c45b4b}
-.save-result{color:#79d39a}
-.admin-nav button:focus-visible,.button:focus-visible,.action:focus-visible{outline:2px solid #e7be73;outline-offset:3px}
-@media(max-width:600px){.admin-nav{display:grid;grid-template-columns:1fr 1fr}.admin-nav button{width:100%;font-size:11px;padding:0 7px!important}.config-panel{padding-left:11px}}
-
-</style>
+    </style>
   </head>
   <body>
     <header class="top">
@@ -1173,7 +1144,6 @@
         </div>
         <nav class="admin-nav" aria-label="Seções do painel">
           <button type="button" class="active" data-target="agendaSection">Agenda</button>
-          <button type="button" data-target="timeBlocksSection">Bloquear horários</button>
           <button type="button" data-target="manualBooking">+ Agendar cliente</button>
           <button type="button" data-target="membershipSection">Clube Jhoe</button>
           <button type="button" data-target="configSection">Configurações</button>
@@ -1219,20 +1189,6 @@
           <div class="agenda" id="agenda">
           <div class="loading">Carregando agenda...</div>
           </div>
-        </section>
-        <section class="admin-section section-shell" id="timeBlocksSection">
-          <div class="section-heading"><div><span class="section-kicker">Disponibilidade</span><h2>Bloquear um intervalo</h2><p>Feche somente o período em que tiver um compromisso. Os demais horários continuam disponíveis.</p></div></div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end">
-            <label>Profissional<select class="field" id="blockBarber" required><option value="">Escolha o profissional</option></select></label>
-            <label>Data<input class="field" id="blockDate" type="date" required></label>
-            <label>De<input class="field" id="blockStart" type="time" value="14:00" required></label>
-            <label>Até<input class="field" id="blockEnd" type="time" value="16:00" required></label>
-            <label>Motivo (opcional)<input class="field" id="blockReason" maxlength="180" placeholder="Ex.: compromisso pessoal"></label>
-            <button class="button" id="saveTimeBlock" type="button">Bloquear horário</button>
-          </div>
-          <p id="timeBlockResult" role="status" style="margin:12px 0;color:#e7be73"></p>
-          <h3 style="margin:18px 0 10px">Horários bloqueados</h3>
-          <div id="timeBlockList"><div class="loading">Carregando bloqueios...</div></div>
         </section>
         <section class="admin-section manual-booking" id="manualBooking">
           <div class="section-heading">
@@ -1325,7 +1281,7 @@
             As mudanças salvas aqui aparecem no site e também controlam a
             duração dos horários.
           </p>
-          <section class="new-plan" id="locationEditor"><h4>📍 Endereço da barbearia</h4><p style="color:#aaa;font-size:12px;margin:0 0 12px">Altere o endereço e o link do Google Maps. A mudança será publicada para os clientes.</p><label style="display:block;color:#aaa;font-size:11px;margin-bottom:6px">Endereço completo</label><input class="config-input" id="siteAddress" maxlength="500" placeholder="Rua, número, bairro, cidade, estado e CEP" style="height:46px;margin-bottom:10px"><label style="display:block;color:#aaa;font-size:11px;margin-bottom:6px">Link do Google Maps</label><input class="config-input" id="siteMapsUrl" maxlength="1000" type="url" placeholder="https://maps.google.com/..." style="height:46px;margin-bottom:12px"><button class="button" id="saveLocationBtn" type="button">Salvar novo endereço</button><p class="save-result" id="locationResult" role="status" aria-live="polite"></p></section><h3>Barbeiros</h3>
+          <h3>Barbeiros</h3>
           <div class="new-plan">
             <h4>Cadastrar barbeiro</h4>
             <div class="barber-create">
@@ -1798,11 +1754,6 @@
           agendaEl.innerHTML = '<div class="empty">' + e.message + "</div>";
         }
       }
-      const blockBarber=document.querySelector("#blockBarber"),blockDate=document.querySelector("#blockDate"),blockStart=document.querySelector("#blockStart"),blockEnd=document.querySelector("#blockEnd"),blockReason=document.querySelector("#blockReason"),timeBlockList=document.querySelector("#timeBlockList"),timeBlockResult=document.querySelector("#timeBlockResult");
-      blockDate.min=today();blockDate.value=today();
-      function fillBlockBarbers(){const selected=blockBarber.value;blockBarber.innerHTML='<option value="">Escolha o profissional</option>';siteBarbers.filter(x=>x.active).forEach(x=>{const option=document.createElement("option");option.value=x.id;option.textContent=x.name;blockBarber.appendChild(option)});if([...blockBarber.options].some(x=>x.value===selected))blockBarber.value=selected;}
-      async function loadTimeBlocks(){timeBlockList.innerHTML='<div class="loading">Carregando bloqueios...</div>';try{const from=today(),to=plusDays(from,60),data=await adminFetch("?view=blocks&from="+encodeURIComponent(from)+"&to="+encodeURIComponent(to));timeBlockList.innerHTML="";if(!data.blocks?.length){timeBlockList.innerHTML='<div class="empty">Nenhum horário bloqueado nos próximos 60 dias.</div>';return;}data.blocks.forEach(item=>{const card=document.createElement("article");card.className="booking";card.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap";const info=document.createElement("div"),title=document.createElement("b"),detail=document.createElement("p");const barber=siteBarbers.find(x=>Number(x.id)===Number(item.barber_id));title.textContent=(barber?.name||"Profissional")+" · "+new Date(item.block_date+"T12:00:00").toLocaleDateString("pt-BR");detail.textContent=String(item.start_time).slice(0,5)+" às "+String(item.end_time).slice(0,5)+(item.reason?" · "+item.reason:"");info.append(title,detail);const remove=document.createElement("button");remove.className="button secondary";remove.type="button";remove.textContent="Liberar horário";remove.onclick=async()=>{if(!confirm("Deseja liberar esse intervalo para agendamentos?"))return;remove.disabled=true;try{await adminFetch("",{method:"POST",body:JSON.stringify({kind:"remove_time_block",id:item.id})});await loadTimeBlocks();}catch(error){alert(error.message);remove.disabled=false;}};card.append(info,remove);timeBlockList.appendChild(card);});}catch(error){timeBlockList.innerHTML='<div class="empty"></div>';timeBlockList.firstChild.textContent=error.message;}}
-      document.querySelector("#saveTimeBlock").onclick=async()=>{const barber_id=Number(blockBarber.value),date=blockDate.value,start_time=blockStart.value,end_time=blockEnd.value;if(!barber_id||!date||!start_time||!end_time||start_time>=end_time){timeBlockResult.textContent="Confira o profissional, a data e os horários. O horário final deve ser depois do inicial.";return;}const button=document.querySelector("#saveTimeBlock");button.disabled=true;timeBlockResult.textContent="Salvando bloqueio...";try{await adminFetch("",{method:"POST",body:JSON.stringify({kind:"time_block",barber_id,date,start_time,end_time,reason:blockReason.value.trim()})});timeBlockResult.textContent="Intervalo bloqueado! Os clientes não poderão agendar nesse período.";blockReason.value="";await loadTimeBlocks();}catch(error){timeBlockResult.textContent=error.message;}finally{button.disabled=false;}};
       let memberships = [];
       const membershipRequests = document.querySelector("#membershipRequests"),
         pendingMemberships = document.querySelector("#pendingMemberships");
@@ -2294,10 +2245,7 @@
           siteServices = data.services || [];
           sitePlans = data.plans || [];
           siteBarbers = data.barbers || [];
-          fillBlockBarbers();
           siteProducts = data.products || [];
-          document.querySelector("#siteAddress").value = data.location?.address || "";
-          document.querySelector("#siteMapsUrl").value = data.location?.maps_url || "";
           renderConfig();
         } catch (e) {
           serviceEditor.innerHTML =
@@ -2306,24 +2254,6 @@
           planEditor.innerHTML = "";
         }
       }
-      const saveLocationBtn = document.querySelector("#saveLocationBtn");
-      saveLocationBtn.onclick = async () => {
-        const address = document.querySelector("#siteAddress").value.trim();
-        const maps_url = document.querySelector("#siteMapsUrl").value.trim();
-        const result = document.querySelector("#locationResult");
-        if (address.length < 10 || !/^https?:\/\//i.test(maps_url)) {
-          result.textContent = "Preencha o endereço completo e um link válido do Google Maps.";
-          result.style.color = "#ef9b89"; return;
-        }
-        saveLocationBtn.disabled = true; result.textContent = "Salvando endereço..."; result.style.color = "#e7be73";
-        try {
-          const data = await adminFetch("", { method: "POST", body: JSON.stringify({ kind: "location", address, maps_url }) });
-          result.textContent = "Endereço atualizado e publicado no site."; result.style.color = "#8dc99e";
-          document.querySelector("#siteAddress").value = data.location.address;
-          document.querySelector("#siteMapsUrl").value = data.location.maps_url;
-        } catch (error) { result.textContent = error.message; result.style.color = "#ef9b89"; }
-        finally { saveLocationBtn.disabled = false; }
-      };
       const newBarberName = document.querySelector("#newBarberName"),
         newBarberPhone = document.querySelector("#newBarberPhone"),
         createBarberBtn = document.querySelector("#createBarberBtn");
@@ -2663,8 +2593,7 @@
         fromDate.value = today();
         toDate.value = plusDays(today(), 30);
         try {
-          await loadConfig();
-          await Promise.all([loadAgenda(), loadMemberships(), loadTimeBlocks()]);
+          await Promise.all([loadAgenda(), loadConfig(), loadMemberships()]);
           populateManualBarbers();
           document.querySelector("#dashboardDate").innerHTML =
             new Date().toLocaleDateString("pt-BR", {
