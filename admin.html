@@ -1107,8 +1107,16 @@ body{background:radial-gradient(ellipse at 50% -15%,#292116 0%,#101111 38%,#0809
 @media(max-width:500px){.top{height:68px;padding:0 14px}.brand{font-size:13px}.wrap{padding:22px 12px 45px}.login{margin:4vh auto;padding:27px 19px;border-radius:14px}.stats{grid-template-columns:1fr 1fr}.stat b{font-size:26px}.toolbar{padding:13px;gap:8px}.booking{padding:15px;border-radius:10px}.actions{gap:7px}.action{min-height:42px;padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){.booking{transition:none}}
 
+
+/* Tipografia premium consistente com o site */
+body,button,input,select,textarea{font-family:'DM Sans',sans-serif}
+.brand,.login h1,.title h1,.info h3,.stat b{font-family:'Playfair Display',Georgia,serif}
+.brand{font-weight:600}
+.login h1,.title h1{font-weight:500;letter-spacing:-.025em}
+.button,.action,.toolbar label,.stat small{font-family:'DM Sans',sans-serif}
+
 </style>
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"></head>
   <body>
     <header class="top">
       <div class="brand">JHOE<small>PAINEL DA AGENDA</small></div>
